@@ -2,14 +2,22 @@
 
 import discord
 from discord.ext.commands import Bot
+import urllib.request, urllib.error, urllib.parse
+import requests
+import bs4
+
+#Home Grown ------------
 import atisModule as ATIS
+import udpy as ud
+import anime as an
+
 
 
 
 #Conditions ------------
 
 bot = Bot(command_prefix='$')
-TOKEN = 'NzQ4MDYzMjA3MDUwMTgyNjU2.X0X-Jg.MiPvXFK91KC-aEiWqHWviF9jXjE'
+TOKEN = 'TOKEN'
 
 
 #Backend ------------
@@ -37,12 +45,32 @@ async def atis(ctx, id):
     await ctx.send(f'-------------------\n**Airport METAR:**\n```{ATIS.getScrape(id)}```-------------------')
 
 
-@bot.command(name = 'airport')
-async def airport(ctx):
-    await ctx.send("hi")
+@bot.command(name = 'hi')
+async def airport(ctx, *arguments):
+    string = ''
+    for arg in arguments:
+        string = string + arg + ' '
+    await ctx.send(f'{string}')
 
-# @bot.command()
 
+@bot.command(name = 'ud')
+async def urbanDict(ctx, arg):
+    await ctx.send(ud.getMeaning(arg))
+
+@bot.command(name = 'fact')
+async def fact(ctx):
+    webRequest = requests.get("https://www.thefactsite.com/")
+    webContent = bs4.BeautifulSoup(webRequest.text, "html.parser")
+    webContent = str(webContent)
+
+    await ctx.send(webContent[webContent.find("Did you know"):webContent.find("</p>")])
+
+@bot.command(name = 'anime')
+async def anime(ctx, *arguments):
+    string = ''
+    for arg in arguments:
+        string = string + arg + ' '
+    await ctx.send(an.getAnime(string))
 
 
 
