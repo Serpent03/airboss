@@ -18,7 +18,7 @@ import anime as an
 #Conditions ------------
 
 bot = Bot(command_prefix='$')
-TOKEN = 'NzQ4MDYzMjA3MDUwMTgyNjU2.X0X-Jg.81seuHfRopy5GjX-2RHqLroW1yg'
+TOKEN = '#'
 
 
 #Backend ------------

@@ -15,5 +15,5 @@ def getAnime(query):
 
     #set up
     
-
-getAnime("Fairy tail")
+if __name__ == "__main__":
+    getAnime("Fairy tail")
