@@ -1,3 +1,3 @@
-posit = "delhi"
+qu = "KMEM"
 
-print(len(posit))
+print(len(qu))

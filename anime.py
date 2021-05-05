@@ -1,18 +1,19 @@
-import urllib.request, urllib.error, urllib.parse
-import discord
+from bs4 import BeautifulSoup
 import requests
-import bs4
 
 def getAnime(query):
-    query = query.replace(" ", "_")
+    query = query.replace(" ", "%20")
 
-    #webRequest = requests.get(f"https://animekisa.tv/search?q={query}")
 
-    webRequest = requests.get(f"https://en.wikipedia.org/wiki/{query}")
-    webProcess = bs4.BeautifulSoup(webRequest.text, features = "html.parser")
-    webContent = (webProcess)
-    
-    print(webContent.find_all("plot"))
+    webRequest = requests.get(f'https://www.google.com/search?q={query}')
+    #webRequest = requests.get("https://en.wikipedia.org/wiki/List_of_game_engines")
+    webProcess = BeautifulSoup(webRequest.text, "html.parser")
+
+
+    text = webProcess.find('h3', {"class" : "Uo8X3b"})
+    print(text.get_text())
+
+    #set up
     
 
 getAnime("Fairy tail")

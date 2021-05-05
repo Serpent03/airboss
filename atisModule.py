@@ -25,6 +25,7 @@ def getWxData(ID):   #get website data
 
         data = (webContent[argPosition1+6:argPosition2])
 
+        print(data)
         return data
     
     except:
@@ -38,8 +39,8 @@ def getScrape(query):
     if len(query) == 4:
         return getWxData(query)     # check if ICAO is submitted
 
-    else:
-        query = query.replace(" ", "+")
+    else:   # if ICAO is not submitted then manually scrape out the information and then pass it on
+        query = query.replace(" ", "%20")
         if "airport icao" not in query:
             query = query + " airport icao"
         else:
@@ -55,3 +56,4 @@ def getScrape(query):
 if  __name__ == "__main__":
 
     getScrape(str(input("enter airport name \n~ ")))
+    

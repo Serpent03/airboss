@@ -8,7 +8,8 @@ import bs4
 
 #Home Grown ------------
 import atisModule as ATIS
-import udpy as ud
+import dictModule as dm
+import translate as trn
 import anime as an
 
 
@@ -17,7 +18,7 @@ import anime as an
 #Conditions ------------
 
 bot = Bot(command_prefix='$')
-TOKEN = 'TOKEN'
+TOKEN = 'NzQ4MDYzMjA3MDUwMTgyNjU2.X0X-Jg.81seuHfRopy5GjX-2RHqLroW1yg'
 
 
 #Backend ------------
@@ -40,22 +41,89 @@ async def atis(ctx, id):
 
     if id[0].islower():
         id = id[0].upper()
-    id = id + oldPosit[1:] 
+    id = id + oldPosit[1:]      # capitalize
     
     await ctx.send(f'-------------------\n**Airport METAR:**\n```{ATIS.getScrape(id)}```-------------------')
 
 
-@bot.command(name = 'hi')
+@bot.command(name = 'airport')
 async def airport(ctx, *arguments):
     string = ''
     for arg in arguments:
         string = string + arg + ' '
+    
     await ctx.send(f'{string}')
 
 
-@bot.command(name = 'ud')
-async def urbanDict(ctx, arg):
-    await ctx.send(ud.getMeaning(arg))
+@bot.command(name = 'ud')   # get meanings from urban dictionary
+async def urbanDict(ctx, *arguments):
+    string = ''
+    for arg in arguments:
+        string = string + arg + ' '
+    
+    data = dm.udMeaning(string)
+
+
+    # set up embed
+
+    embed = discord.Embed(
+        title = data["Word"],
+        color = 0xFFA200
+    )
+
+    embed.set_author(
+        name = "Urban Dictionary",
+        url = "https://www.urbandictionary.com/",
+        icon_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/UD_logo-01.svg/1200px-UD_logo-01.svg.png"
+    )
+
+    embed.add_field(
+        name = "Definition",
+        value = data["Definition"],
+    )
+
+    embed.add_field(
+        name = "Example",
+        value = data["Example"]
+    )
+
+    await ctx.send(embed = embed)
+
+@bot.command(name = 'wiki') # get meanings from wikipedia
+async def wikiPedia(ctx, *arguments):
+    string = ''
+    for arg in arguments:
+        string = string + arg + ' '
+    
+    data = dm.wpMeaning(string)
+
+    # set up embed
+    if data == Exception:
+        await ctx.send(data)
+    else:
+        embed = discord.Embed(
+            title = data["Name"],
+            url = data["Url"],
+            color = 0xd4d4d4,
+        )
+
+        embed.set_author(
+            name = "Wikipedia",
+            url = "https://www.wikipedia.org/",
+            icon_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Wikipedia_logo_%28svg%29.svg/1200px-Wikipedia_logo_%28svg%29.svg.png"
+        )
+
+        embed.set_thumbnail(
+            url = data["Thumbnail"]
+        )
+
+        embed.add_field(
+            name = "Summary",
+            value = data["Summary"]
+        )
+
+        await ctx.send(embed = embed)
+
 
 @bot.command(name = 'fact')
 async def fact(ctx):
@@ -66,11 +134,17 @@ async def fact(ctx):
     await ctx.send(webContent[webContent.find("Did you know"):webContent.find("</p>")])
 
 @bot.command(name = 'anime')
+async def getAnime():
+    pass
+
+
+@bot.command(name = 'translate')
 async def anime(ctx, *arguments):
     string = ''
     for arg in arguments:
         string = string + arg + ' '
-    await ctx.send(an.getAnime(string))
+    
+    await ctx.send(trn.translate(string))
 
 
 
