@@ -7,12 +7,7 @@ import requests
 import bs4
 
 #Home Grown ------------
-import atisModule as ATIS
-import dictModule as dm
-import translate as trn
-import anime as an
-
-
+import modules
 
 
 #Conditions ------------
@@ -43,7 +38,7 @@ async def atis(ctx, id):
         id = id[0].upper()
     id = id + oldPosit[1:]      # capitalize
     
-    await ctx.send(f'-------------------\n**Airport METAR:**\n```{ATIS.getScrape(id)}```-------------------')
+    await ctx.send(f'-------------------\n**Airport METAR:**\n```{modules.getIcaoData(id)}```-------------------')
 
 
 @bot.command(name = 'airport')
@@ -61,7 +56,7 @@ async def urbanDict(ctx, *arguments):
     for arg in arguments:
         string = string + arg + ' '
     
-    data = dm.udMeaning(string)
+    data = modules.udMeaning(string)
 
 
     # set up embed
@@ -95,7 +90,7 @@ async def wikiPedia(ctx, *arguments):
     for arg in arguments:
         string = string + arg + ' '
     
-    data = dm.wpMeaning(string)
+    data = modules.wpMeaning(string)
 
     # set up embed
     if data == Exception:
@@ -133,10 +128,6 @@ async def fact(ctx):
 
     await ctx.send(webContent[webContent.find("Did you know"):webContent.find("</p>")])
 
-@bot.command(name = 'anime')
-async def getAnime():
-    pass
-
 
 @bot.command(name = 'translate')
 async def anime(ctx, *arguments):
@@ -144,9 +135,16 @@ async def anime(ctx, *arguments):
     for arg in arguments:
         string = string + arg + ' '
     
-    await ctx.send(trn.translate(string))
+    await ctx.send(modules.translate(string))
 
 
+@bot.command(name = "explain")
+async def scrapeQuery(ctx, *arguments):
+    string = ''
+    for arg in arguments:
+        string = string + arg + ' '
+    
+    await ctx.send(modules.queryScrapeData(string))
 
 
 
