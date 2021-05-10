@@ -6,6 +6,7 @@ import urllib.request, urllib.error, urllib.parse
 import requests
 import bs4
 from selenium import webdriver
+import time
 
 # Backend
 
@@ -104,24 +105,41 @@ def getIcaoData(query):
 def queryScrapeData(query):
 
     query = query.replace(" ", "%20")
+    url = f'https://www.google.com/search?q={query}&rlz=1C1RXQR_enIN951IN951&aqs=chrome..69i57.10328j0j4&sourceid=chrome&ie=UTF-8'
 
     # set up selenium and chromedriver
     option = webdriver.ChromeOptions()
-    option.add_argument('headless')
+    option.add_argument('headless') # run slenium without window
     driverPath = r'E:/Py/Lib/site-packages/chromedriver_py/chromedriver.exe'
     seleniumInstance = webdriver.Chrome(executable_path=driverPath, options=option)
+    seleniumInstance.get(url)
 
-    seleniumInstance.get(f'https://www.google.com/search?q={query}&rlz=1C1RXQR_enIN951IN951&aqs=chrome..69i57.10328j0j4&sourceid=chrome&ie=UTF-8')
-    reqElem = seleniumInstance.find_elements_by_xpath('//div[@class="kno-rdesc"]')
+    returnPayload = dict (  # set up a dictionary returning various data
+        link = url,
+        summary = "",
+    )
+
+    try:
+        reqElem = seleniumInstance.find_elements_by_xpath('//div[@class="kno-rdesc"]')
+        returnData = str(reqElem[0].text.replace(f"\n", ": "))
+        if returnData.find("Wikipedia") != -1:
+            returnData = returnData.replace("Wikipedia", "")
+        returnData = returnData[13:] # remove the description prefix
+        seleniumInstance.close()    # close selenium after scrape
+        returnPayload["summary"] = returnData
     
-    returnData = str(reqElem[0].text.replace(f"\n", ": "))
-    returnData = returnData[13:-10] # remove the wikipedia suffix and the description prefix
-    seleniumInstance.close()    # close selenium after scrape
+    except:     # check for other paragraph div classes
+        reqElem = seleniumInstance.find_elements_by_xpath('//div[@class="PZPZlf"]')
+        returnData = str(reqElem[0].text.replace(f"\n", ": "))
+        #returnData = returnData[13:-10] # remove the wikipedia suffix and the description prefix
+        seleniumInstance.close()    # close selenium after scrape
+        returnPayload["summary"] = returnData
+        
+    return returnPayload
 
-    return returnData
+if __name__ == "__main__":
+    queryScrapeData("apollo 13")
 
 
 # TRANSLATE MODULE
 
-def translate(query):
-    pass
