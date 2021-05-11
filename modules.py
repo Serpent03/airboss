@@ -1,4 +1,4 @@
-# Modules
+#   Modules
 
 import urbandict as ud
 import wikipedia
@@ -8,9 +8,22 @@ import bs4
 from selenium import webdriver
 import time
 
-# Backend
+#   Configuration
 
-#UD and WIKIPEDIA MODULES
+#----------[ Selenium ]----------
+
+# set up selenium and chromedriver
+option = webdriver.ChromeOptions()
+option.add_argument('headless') # run slenium without window
+driverPath = r'E:/Py/Lib/site-packages/chromedriver_py/chromedriver.exe'
+
+
+#----------[ End ]---------- 
+
+
+#   Backend
+
+#----------[ Urban Dictionary and Wikipedia Module ]---------- 
 
 def udMeaning(query):
     try:
@@ -57,7 +70,7 @@ def wpMeaning(query):
     except Exception as e:
         return e
 
-# ATIS MODULE
+#----------[ ATIS module for wx, and ICAO fetch module ]---------- 
 def getWxData(ID):   #get website data
 
     dataURL = f'https://www.aviationweather.gov/metar/data?ids={ID}&format=raw&hours=0&taf=off&layout=on'
@@ -101,17 +114,13 @@ def getIcaoData(query):
 
         return getWxData(webContent[webContent.find("ICAO")+6:webContent.find("ICAO")+10])
 
-# SELENIUM MODULE 
+
+#----------[ Selenium web scraping module ]---------- 
 def queryScrapeData(query):
 
     query = query.replace(" ", "%20")
     url = f'https://www.google.com/search?q={query}&rlz=1C1RXQR_enIN951IN951&aqs=chrome..69i57.10328j0j4&sourceid=chrome&ie=UTF-8'
-
-    # set up selenium and chromedriver
-    option = webdriver.ChromeOptions()
-    option.add_argument('headless') # run slenium without window
-    driverPath = r'E:/Py/Lib/site-packages/chromedriver_py/chromedriver.exe'
-    seleniumInstance = webdriver.Chrome(executable_path=driverPath, options=option)
+    seleniumInstance = webdriver.Chrome(executable_path=driverPath, options=option)     # set up a selenium instance.
     seleniumInstance.get(url)
 
     returnPayload = dict (  # set up a dictionary returning various data
@@ -121,25 +130,60 @@ def queryScrapeData(query):
 
     try:
         reqElem = seleniumInstance.find_elements_by_xpath('//div[@class="kno-rdesc"]')
-        returnData = str(reqElem[0].text.replace(f"\n", ": "))
-        if returnData.find("Wikipedia") != -1:
-            returnData = returnData.replace("Wikipedia", "")
-        returnData = returnData[13:] # remove the description prefix
-        seleniumInstance.close()    # close selenium after scrape
-        returnPayload["summary"] = returnData
-    
+
+        try:    # try to return the list index. If not, return error.
+            returnData = str(reqElem[0].text.replace(f"\n", ": "))
+            if returnData.find("Wikipedia") != -1:
+                returnData = returnData.replace("Wikipedia", "")
+            returnData = returnData[13:] # remove the description prefix
+            seleniumInstance.close()    # close selenium after scrape
+            returnPayload["summary"] = returnData
+            return returnPayload
+
+        except Exception as e:
+            return e
+
     except:     # check for other paragraph div classes
         reqElem = seleniumInstance.find_elements_by_xpath('//div[@class="PZPZlf"]')
-        returnData = str(reqElem[0].text.replace(f"\n", ": "))
-        #returnData = returnData[13:-10] # remove the wikipedia suffix and the description prefix
-        seleniumInstance.close()    # close selenium after scrape
-        returnPayload["summary"] = returnData
-        
-    return returnPayload
+
+        try:    # try to return the list index. If not, return error.
+            returnData = str(reqElem[0].text.replace(f"\n", ": "))
+            seleniumInstance.close()    # close selenium after scrape
+            returnPayload["summary"] = returnData
+            return returnPayload
+
+        except Exception as e:
+            return e
+
+    
+
+    
+
+
+#----------[ Image module ]---------- 
+
+def imageScrape(query):
+
+    query = query.replace(" ", "%20")
+    url = f'https://www.google.com/search?q={query}&rlz=1C1RXQR_enIN951IN951&sxsrf=ALeKk00z0haR2dhtm1zozCDH-qzmFGvWcQ:1620654384218&source=lnms&tbm=isch&sa=X'
+    seleniumInstance = webdriver.Chrome(executable_path=driverPath, options=option)
+    seleniumInstance.get(url)
+
+    reqElem = seleniumInstance.find_element_by_css_selector('//img[@class="Q4LuWd"]')
+    print(reqElem)
+    
+    
+    #returnPayload = [url]
+
+
+
+
+#----------[ Anime module ]---------- 
+
+# I have no idea how to make this without having the self-XXS(?) errors pop up.
+
+
+#----------[ le testing phase ]---------- 
 
 if __name__ == "__main__":
-    queryScrapeData("apollo 13")
-
-
-# TRANSLATE MODULE
-
+    imageScrape("dog")
