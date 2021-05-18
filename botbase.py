@@ -15,6 +15,10 @@ import modules
 bot = Bot(command_prefix='$')
 TOKEN = ''
 
+with open("token.txt", 'r') as f:
+    TOKEN  = f.readline()
+    f.close()
+
 
 #----------[ Backend ]---------- 
 

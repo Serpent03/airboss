@@ -1,3 +1,6 @@
-qu = "KMEM"
+list = [1,2]
 
-print(len(qu))
+try:
+    print(list[3])
+except Exception as e:
+    print(str(e).capitalize())
